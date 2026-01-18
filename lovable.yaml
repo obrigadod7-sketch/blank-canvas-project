@@ -3,7 +3,7 @@ description: Full-stack application with FastAPI backend and React frontend
 
 # Project structure
 structure:
-  - path: frontend
+  - path: .
     type: react
   - path: backend
     type: python
@@ -11,13 +11,13 @@ structure:
 # Frontend configuration
 frontend:
   framework: react
-  language: javascript
-  packageManager: yarn
-  buildTool: craco
-  buildCommand: yarn install && yarn build
-  startCommand: yarn start
-  port: 3000
-  outputDirectory: build
+  language: typescript
+  packageManager: npm
+  buildTool: vite
+  buildCommand: npm ci && npm run build
+  startCommand: npm run dev -- --host 0.0.0.0 --port 8080
+  port: 8080
+  outputDirectory: dist
   env:
     REACT_APP_API_URL: ${BACKEND_URL:-http://localhost:8000}
 
@@ -67,8 +67,8 @@ deployment:
       type: web
       frontend:
         framework: react
-        buildCommand: yarn install && yarn build
-        publishPath: ./frontend/build
+        buildCommand: npm ci && npm run build
+        publishPath: ./dist
       backend:
         framework: fastapi
         buildCommand: pip install -r requirements.txt
@@ -79,7 +79,7 @@ deployment:
 healthChecks:
   frontend:
     path: /
-    port: 3000
+    port: 8080
   backend:
     path: /api/
     port: 8000

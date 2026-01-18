@@ -1,0 +1,101 @@
+name: Watizat
+description: Full-stack application with FastAPI backend and React frontend
+
+# Project structure
+structure:
+  - path: frontend
+    type: react
+  - path: backend
+    type: python
+
+# Frontend configuration
+frontend:
+  framework: react
+  language: javascript
+  packageManager: yarn
+  buildTool: craco
+  buildCommand: yarn install && yarn build
+  startCommand: yarn start
+  port: 3000
+  outputDirectory: build
+  env:
+    REACT_APP_API_URL: ${BACKEND_URL:-http://localhost:8000}
+
+# Backend configuration
+backend:
+  framework: fastapi
+  language: python
+  pythonVersion: '3.11'
+  installCommand: pip install -r requirements.txt
+  startCommand: uvicorn server:app --host 0.0.0.0 --port 8000 --reload
+  port: 8000
+  workingDirectory: backend
+  env:
+    MONGO_URL: ${MONGO_URL}
+    DB_NAME: ${DB_NAME:-watizat_db}
+    JWT_SECRET: ${JWT_SECRET}
+    EMERGENT_LLM_KEY: ${EMERGENT_LLM_KEY}
+    CORS_ORIGINS: "*"
+    PYTHON_VERSION: '3.11'
+
+# Environment variables template
+environmentVariables:
+  - name: MONGO_URL
+    description: MongoDB connection string (MongoDB Atlas)
+    required: true
+    example: mongodb+srv://username:password@cluster.mongodb.net/watizat_db?retryWrites=true&w=majority
+  - name: DB_NAME
+    description: Database name
+    required: false
+    default: watizat_db
+  - name: JWT_SECRET
+    description: JWT secret key for authentication
+    required: true
+    generate: true
+  - name: EMERGENT_LLM_KEY
+    description: API key for Emergent AI service
+    required: false
+  - name: REACT_APP_API_URL
+    description: Backend API URL
+    required: true
+    example: https://your-backend-domain.com
+
+# Deployment targets
+deployment:
+  targets:
+    - name: lovable
+      type: web
+      frontend:
+        framework: react
+        buildCommand: yarn install && yarn build
+        publishPath: ./frontend/build
+      backend:
+        framework: fastapi
+        buildCommand: pip install -r requirements.txt
+        startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+        workingDirectory: ./backend
+
+# Health checks
+healthChecks:
+  frontend:
+    path: /
+    port: 3000
+  backend:
+    path: /api/
+    port: 8000
+
+# Development settings
+development:
+  autoReload: true
+  debugMode: true
+  proxyBackend: true
+  backendUrl: http://localhost:8000
+
+# Build optimization
+build:
+  frontend:
+    optimization: production
+    sourceMaps: false
+    minify: true
+  backend:
+    optimization: production

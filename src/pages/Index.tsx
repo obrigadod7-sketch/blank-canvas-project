@@ -1,9 +1,11 @@
+import * as React from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-const Index = () => {
+const Index = React.forwardRef<HTMLDivElement>((_props, ref) => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div ref={ref} className="min-h-screen bg-background text-foreground">
       <main className="container flex min-h-screen items-center justify-center py-10">
         <Card className="w-full max-w-xl">
           <CardHeader>
@@ -35,6 +37,7 @@ const Index = () => {
       </main>
     </div>
   );
-};
+});
+Index.displayName = "Index";
 
 export default Index;
